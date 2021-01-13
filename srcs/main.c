@@ -1,44 +1,57 @@
 #include "../includes/minishell.h"
 
-/*void	ischaracter_slash_next(t_minishell *ms, int i)
-{
-
-}*/
 void	ischaracter_slash(t_minishell *ms, int i)
 {
 	if (ms->line[i] == ';') //REPERE QUI DIFFERENCIE LES CARACTERE HORS GUILLEMETS
 		ms->line[i] = -50;
-	if (ms->line[i] == '>')
-		ms->line[i] = -51;
-	if (ms->line[i] == '<')
-		ms->line[i] = -52;
 	if (ms->line[i] == '>' && ms->line[i+1] == '>') //GESTION BLACKSLASH AVEC DIFFERENT CARACTERE DE PARSING
 	{	str_remove_index(i+1, ms);
 		ms->line[i] = -53;
 	}
+	if (ms->line[i] == '>')
+		ms->line[i] = -51;
+	if (ms->line[i] == '<')
+		ms->line[i] = -52;
+	if (ms->line[i] == '|')
+		ms->line[i] = -54;
+
+	if (ms->line[i] == '\\' && ms->line[i+1] == '|')
+	{
+		str_remove_index(i, ms);
+	}
 	if (ms->line[i] == '\\' && ms->line[i+1] == '>')
+	{
 		str_remove_index(i, ms);
+	}
 	if (ms->line[i] == '\\' && ms->line[i+1] == '<')
+	{
 		str_remove_index(i, ms);
+	}
 	if (ms->line[i] == '\\' && ms->line[i+1] == ';')
+	{
 		str_remove_index(i, ms);
+	}
 	if (ms->line[i] == '\\' && ms->line[i+1] == '\\')
+	{
 		str_remove_index(i, ms);
+	}
 	//ischaracter_slash_next(ms, i);
 }
 
 int		ischaracter_quotes(t_minishell *ms, int i)
 {
 	str_remove_index(i, ms);
-	if (i != 0)
-		i--;
 	while (ms->line[i])
 	{
 		if (ms->line[i] == '\\' && ms->line[i + 1] == '\\')
 		{
 			str_remove_index(i, ms);
 		}
-		if (ms->line[i] == '"')
+		else if (ms->line[i] == '\\' && ms->line[i + 1] == '"')
+		{
+			str_remove_index(i, ms);
+		}
+		else if (ms->line[i] == '"')
 		{
 			str_remove_index(i, ms);
 			if (i != 0)
@@ -53,11 +66,13 @@ int		ischaracter_quotes(t_minishell *ms, int i)
 int		ischaracter_squotes(t_minishell *ms, int i)
 {
 	str_remove_index(i, ms);
-	if (i != 0)
-		i--;
 	while (ms->line[i])
 	{
-		if (ms->line[i] == '\'')
+		if (ms->line[i] == '\\' && ms->line[i + 1] == '\'')
+		{
+			str_remove_index(i, ms);
+		}
+		else if (ms->line[i] == '\'')
 		{
 			str_remove_index(i, ms);
 			if (i != 0)
@@ -77,6 +92,7 @@ void	ft_testing(t_minishell *ms)
 	while (ms->line[i])
 	{
 		ischaracter_slash(ms, i);
+		ft_printf("%c\n", ms->line[i]);
 		if (ms->line[i] == '\\' && ms->line[i + 1] == '"') //GESTION BLACKSLASH AVEC DIFFERENT CARACTERE DE PARSING
 		{
 			str_remove_index(i, ms);
@@ -149,7 +165,7 @@ int		main(void)
 	{
 		get_next_line(0, &ms->line);
 		ft_testing(ms);
-		ft_printf("%s\n", ms->command_tab[0]);
+		ft_printf("%s |||| %s\n", ms->command_tab[0], ms->line);
 		while (ms->command_tab[i])
 		{
 			ms->line = ms->command_tab[i];
